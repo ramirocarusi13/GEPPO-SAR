@@ -1,0 +1,39 @@
+{
+  "key": "seguridad",
+  "nombre": "Seguridad y Medio Ambiente",
+  "archivo": "*Seguridad y Medio Ambiente*.xlsx",
+  "excluir": "Copia de*",
+  "bloques": [
+    {
+      "nombre": "Residuos (Land Waste)",
+      "hoja_depto": "Ⅲ Seguridad",
+      "hoja_mr": "Ⅲ Safety",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 1},
+      "col_mr": {"modo": "mes_desde", "col": "BS", "mes": "2026-01"},
+      "filas": [[2, 4], [3, 5], [4, 6], [5, 7]],
+      "_nota": "Las formulas de acumulado del MR (filas 6/7) suman el objetivo en vez del real. No se pisan: si dan distinto que el depto, se avisa en la hoja AUTO."
+    },
+    {
+      "nombre": "CO2",
+      "hoja_depto": "Ⅲ Seguridad",
+      "hoja_mr": "Ⅲ Safety",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 11},
+      "col_mr": {"modo": "mes_desde", "col": "BS", "mes": "2026-01"},
+      "filas": [[12, 16], [13, 17], [14, 18], [15, 19]]
+    },
+    {
+      "nombre": "Agua (Water)",
+      "hoja_depto": "Ⅲ Seguridad",
+      "hoja_mr": "Ⅲ Safety",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 25},
+      "col_mr": {"modo": "mes_desde", "col": "BS", "mes": "2026-01"},
+      "filas": [[26, 28], [27, 29], [28, 30], [29, 31]]
+    }
+  ],
+  "textos": [
+    {"seccion": "Residuos (cuadro B4 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A4"},
+    {"seccion": "CO2 (cuadro B20 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A16"},
+    {"seccion": "Agua (cuadro B34 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A28"},
+    {"seccion": "Otros (cuadro B51 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A42"}
+  ]
+}

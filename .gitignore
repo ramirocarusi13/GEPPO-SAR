@@ -1,0 +1,10 @@
+registro.log
+estado.json
+__pycache__/
+*.xlsx
+*.xls
+*.xlsm
+*.pdf
+salida/
+muestras/
+~$*

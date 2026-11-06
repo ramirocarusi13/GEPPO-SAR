@@ -1,0 +1,13 @@
+{
+  "_comentario": "Rutas reales. Para probar con copias locales: py geppo_cargar.py --config otra_config.json",
+  "carpeta_deptos": "Z:/0_Traducciones/GEPPO/{anio}",
+  "carpeta_format": "Z:/0_Traducciones/GEPPO/format/FY26",
+  "carpeta_salida": "Z:/0_Traducciones/GEPPO/format/FY26",
+  "nombre_salida": "MonthlyReport_SAR_{mes}_AUTO.xlsx",
+  "minutos_entre_revisiones": 10,
+  "produccion": {
+    "carpeta_deptos": "Z:/0_Traducciones/GEPPO/{anio}",
+    "carpeta_format": "Z:/0_Traducciones/GEPPO/format/FY26",
+    "carpeta_salida": "Z:/0_Traducciones/GEPPO/format/FY26"
+  }
+}

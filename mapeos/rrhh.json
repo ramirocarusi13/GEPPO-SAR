@@ -1,0 +1,83 @@
+{
+  "key": "rrhh",
+  "nombre": "RRHH",
+  "archivo": "*GEPPO SAR RRHH.xlsx",
+  "excluir": "Copia de*",
+  "bloques": [
+    {
+      "nombre": "1. Dotacion (Employees HC)",
+      "hoja_depto": "Ⅳ",
+      "hoja_mr": "Ⅳ",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 3},
+      "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"},
+      "filas": [[4, 3], [5, 4], [6, 5], [7, 6], [8, 7], [9, 8]],
+      "revisar": {"3": "Juan suele ajustar Directo/Indirecto respecto de lo que informa RRHH. Confirmar el numero.", "4": "Ver Directo (fila 3)."}
+    },
+    {
+      "nombre": "2. Directos regulares / temporales",
+      "hoja_depto": "Ⅳ",
+      "hoja_mr": "Ⅳ",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 20},
+      "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"},
+      "filas": [[21, 24], [22, 25]]
+    },
+    {
+      "nombre": "4. Ausentismo",
+      "hoja_depto": "Ⅳ",
+      "hoja_mr": "Ⅳ",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 51},
+      "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"},
+      "filas": [[53, 55, "numero"], [52, 56, "numero"], [54, 57, "numero"], [55, 58, "numero"], [57, 60, "numero"]]
+    },
+    {
+      "nombre": "5. Rotacion",
+      "hoja_depto": "Ⅳ",
+      "hoja_mr": "Ⅳ",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 80},
+      "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"},
+      "filas": [[81, 72, "numero"], [82, 73, "numero"]]
+    },
+    {
+      "nombre": "6. Horas extra",
+      "hoja_depto": "Ⅳ",
+      "hoja_mr": "Ⅳ",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 91},
+      "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"},
+      "filas": [[92, 88, "numero"]]
+    },
+    {
+      "nombre": "7. Seguridad (LT, D1, First Aid, Near miss)",
+      "hoja_depto": "Ⅳ",
+      "hoja_mr": "Ⅳ",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 108},
+      "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"},
+      "filas": [[109, 102], [110, 103], [111, 104], [115, 105], [112, 106], [113, 107]],
+      "revisar": {"106": "First Aid: hubo diferencias entre RRHH y el informe en meses anteriores. Confirmar."}
+    },
+    {
+      "nombre": "Comments: LT y D1 (tabla de seguridad, anio fiscal)",
+      "hoja_depto": "Ⅳ",
+      "hoja_mr": "Comments",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 108},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-04"},
+      "filas": [[109, 39], [110, 40]]
+    }
+  ],
+  "formulas_de_col_anterior": [
+    {
+      "hoja_mr": "Ⅳ",
+      "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"},
+      "filas": [26, 39, 40, 43, 44, 109]
+    }
+  ],
+  "valores_de_col_anterior": [{"hoja_mr": "Ⅳ", "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"}, "filas": [41, 42]}],
+  "textos": [
+    {"seccion": "Dotacion / SDL (cuadro A4 del MR)", "hoja_depto": "Ⅳ", "celda": "A5"},
+    {"seccion": "Directos (cuadro A22 del MR)", "hoja_depto": "Ⅳ", "celda": "A22"},
+    {"seccion": "Indirectos y oficina (cuadro B38 del MR)", "hoja_depto": "Ⅳ", "celda": "A41"},
+    {"seccion": "Ausentismo (cuadro A51 del MR)", "hoja_depto": "Ⅳ", "celda": "A53"},
+    {"seccion": "Rotacion (cuadro A66 del MR)", "hoja_depto": "Ⅳ", "celda": "A70"},
+    {"seccion": "Seguridad: caso FA y contramedida (cuadros A107 / B121 del MR)", "hoja_depto": "Ⅳ", "celda": "A108"}
+  ],
+  "fotos": [{"seccion": "Fotos del accidente (van en B113:S120 del MR)", "hoja_depto": "Ⅳ", "area_depto": "S110:BD130"}]
+}

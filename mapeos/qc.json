@@ -1,0 +1,95 @@
+{
+  "key": "qc",
+  "nombre": "Calidad (QC)",
+  "archivo": "*GEPPO SAR【QC】.xlsx",
+  "excluir": "Copia de*",
+  "bloques": [
+    {
+      "nombre": "1. Reclamos de cliente (casos, PPM, objetivo)",
+      "hoja_depto": "II Calidad -1",
+      "hoja_mr": "Ⅱ Quality-1",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 4},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-01"},
+      "filas": [[5, 5], [6, 6], [7, 7]],
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 4}, "fila": 5}
+    },
+    {
+      "nombre": "1b. Reclamos de cliente en hoja Comments",
+      "hoja_depto": "II Calidad -1",
+      "hoja_mr": "Comments",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 4},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-01"},
+      "filas": [[5, 32], [6, 33], [7, 34]],
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 4}, "fila": 5}
+    },
+    {
+      "nombre": "2. Garantia (Warranty)",
+      "hoja_depto": "II Calidad -1",
+      "hoja_mr": "Ⅱ Quality-1",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 4},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-01"},
+      "filas": [[67, 71], [68, 72], [69, 73], [70, 74], [71, 75], [72, 76], [73, 77], [74, 78]],
+      "_nota": "Siempre 0 en 2026: el orden de filas no se pudo confirmar con datos reales.",
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 4}, "fila": 5}
+    },
+    {
+      "nombre": "3. Defectos internos por linea (casos, %, objetivo)",
+      "hoja_depto": "II Calidad-2",
+      "hoja_mr": "Ⅱ Quality-1",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 3},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-01"},
+      "filas": [[4, 91], [5, 92, "pct100"], [6, 93], [7, 94], [8, 95, "pct100"], [9, 96], [10, 97],
+       [11, 98, "pct100"], [12, 99], [13, 100], [14, 101, "pct100"], [15, 102], [16, 103],
+       [17, 104, "pct100"], [18, 105], [19, 106], [20, 107, "pct100"], [21, 108], [22, 109],
+       [23, 110, "pct100"], [24, 111], [25, 112], [26, 113, "pct100"], [27, 114], [31, 118],
+       [32, 119, "pct100_2"], [33, 120]],
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 3}, "fila": 31}
+    },
+    {
+      "nombre": "4. Proveedores (total y criticos)",
+      "hoja_depto": "II Calidad-2",
+      "hoja_mr": "Ⅱ Quality-1",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 3},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-01"},
+      "filas": [[57, 125], [58, 126], [59, 127], [63, 131], [64, 132], [65, 133], [66, 134], [67, 135], [68, 136],
+       [69, 137]],
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 3}, "fila": 57}
+    }
+  ],
+  "paretos": [
+    {
+      "nombre": "Pareto defectos de cliente",
+      "hoja_depto": "II Calidad -1",
+      "rango_depto": "U21:V24",
+      "hoja_mr": "Ⅱ Quality-1",
+      "celda_mr": "BF21",
+      "filas_mr": 4,
+      "acumulado": true,
+      "traducir": true,
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 4}, "fila": 5}
+    },
+    {
+      "nombre": "Pareto defectos internos",
+      "hoja_depto": "II Calidad-2",
+      "rango_depto": "X78:Y83",
+      "hoja_mr": "Ⅱ Quality-1",
+      "celda_mr": "BF82",
+      "filas_mr": 6,
+      "acumulado": false,
+      "traducir": false,
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 3}, "fila": 31}
+    }
+  ],
+  "glosario": {"Heater equivocado": "Wrong Heater", "Etiqueta Desplazada": "Lavel of out possition", "Paño Equivocado": "Wrong Material", "Costura no toma Material": "Seam does not catch material", "Etiqueta Soldada NG": "Welded Label NG"},
+  "textos": [
+    {"seccion": "Defecto de cliente del mes (cuadro B14 del MR)", "hoja_depto": "II Calidad -1", "celda": "A19"},
+    {"seccion": "Defecto interno: comentario, causa y C/M (cuadros A69 / B80 / A86 del MR)", "hoja_depto": "II Calidad-2", "celda": "A16"},
+    {"seccion": "Defecto interno: titulo", "hoja_depto": "II Calidad-2", "celda": "A45"},
+    {"seccion": "Proveedores (cuadros A98 / A112 / A117 del MR)", "hoja_depto": "II Calidad-2", "celda": "B51"}
+  ],
+  "fotos": [
+    {"seccion": "Fotos defecto de cliente (van en T16:BB46 del MR)", "hoja_depto": "II Calidad -1", "area_depto": "A19:R60"},
+    {"seccion": "Fotos defecto interno (van en B73:S80 del MR)", "hoja_depto": "II Calidad-2", "area_depto": "A19:F43"},
+    {"seccion": "Fotos proveedores (van en B103:N111 del MR)", "hoja_depto": "II Calidad-2", "area_depto": "A44:F85"}
+  ]
+}

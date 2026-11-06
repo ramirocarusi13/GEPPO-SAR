@@ -1,0 +1,80 @@
+{
+  "key": "produccion",
+  "nombre": "Produccion y Costos",
+  "archivo": "*PRODUCTION  COST】+Stretch.xlsx",
+  "archivo_alternativo": "*PRODUCTION  COST】.xlsx",
+  "excluir": "Copia de*",
+  "bloques": [
+    {
+      "nombre": "Productividad por linea (SAR, Corte, M1, M2, M3-5, M6, M7-9)",
+      "hoja_depto": "I- Producci",
+      "hoja_mr": "Production",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 36},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-04"},
+      "filas": [[38, 35], [40, 37], [42, 39, "pct_a_fraccion"], [44, 41], [45, 42], [59, 56], [61, 58],
+       [63, 60, "pct_a_fraccion"], [65, 62], [66, 63], [82, 79], [84, 81], [86, 83, "pct_a_fraccion"],
+       [88, 85], [89, 86], [103, 100], [105, 102], [107, 104, "pct_a_fraccion"], [109, 106], [110, 107],
+       [124, 121], [126, 123], [128, 125, "pct_a_fraccion"], [130, 127], [131, 128], [146, 142], [148, 144],
+       [150, 146, "pct_a_fraccion"], [152, 148], [153, 149], [169, 165], [171, 167],
+       [173, 169, "pct_a_fraccion"], [175, 171], [176, 172]],
+      "ops_si_carga": ["ventana_graficos_produccion", "cuadritos_mes_actual_produccion"],
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 36}, "fila": 38}
+    },
+    {
+      "nombre": "Kaizen de costos: resultado del mes y acumulado",
+      "hoja_depto": "Costos",
+      "hoja_mr": "Ⅵ",
+      "col_depto": {"modo": "fecha_en_fila", "fila": 16},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-04"},
+      "filas": [[20, 24], [23, 27]],
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 16}, "fila": 20}
+    },
+    {
+      "nombre": "Scrap (indice, target, resultado, produccion 1%)",
+      "hoja_depto": "Costos",
+      "hoja_mr": "Ⅵ",
+      "col_depto": {"modo": "mes_desde", "col": "AJ", "mes": "2026-04"},
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2026-04"},
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 16}, "fila": 20},
+      "filas": [[66, 60, "red4"], [64, 61, "red2"], [65, 62, "red2"], [66, 63, "red4"], [71, 68, "red2"]]
+    },
+    {
+      "nombre": "Labor / Material / Expenses",
+      "hoja_depto": "Costos",
+      "hoja_mr": "Ⅵ",
+      "col_depto": {"modo": "mes_desde", "col": "F", "mes": "2026-04", "paso": 2},
+      "col_mr": {"modo": "mes_desde", "col": "P", "mes": "2026-04", "paso": 3},
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 16}, "fila": 20},
+      "filas": [[34, 33], [36, 34, "miles_coma"], [38, 35, "miles_coma"]],
+      "revisar": {"33": "Labor: Juan a veces lo pone como numero entero y a veces en miles con coma. Se copio el numero del depto.", "34": "Material: en miles con coma, como lo pone Juan.", "35": "Expenses: en miles con coma, como lo pone Juan."}
+    }
+  ],
+  "celdas": [
+    {"hoja_depto": "Costos", "depto": "G10", "hoja_mr": "Ⅵ", "mr": "X15"},
+    {"hoja_depto": "Costos", "depto": "J10", "hoja_mr": "Ⅵ", "mr": "AE15"},
+    {"hoja_depto": "Costos", "depto": "M10", "hoja_mr": "Ⅵ", "mr": "AL15"},
+    {"hoja_depto": "Costos", "depto": "G11", "hoja_mr": "Ⅵ", "mr": "X16"},
+    {"hoja_depto": "Costos", "depto": "J11", "hoja_mr": "Ⅵ", "mr": "AE16"},
+    {"hoja_depto": "Costos", "depto": "G12", "hoja_mr": "Ⅵ", "mr": "X17"},
+    {"hoja_depto": "Costos", "depto": "J12", "hoja_mr": "Ⅵ", "mr": "AE17"},
+    {"hoja_depto": "Costos", "depto": "H63", "hoja_mr": "Ⅵ", "mr": "X70", "transf": "red2"},
+    {"hoja_depto": "Costos", "depto": "K63", "hoja_mr": "Ⅵ", "mr": "AE70", "transf": "red2"},
+    {"hoja_depto": "Costos", "depto": "H64", "hoja_mr": "Ⅵ", "mr": "X71", "transf": "red2"},
+    {"hoja_depto": "Costos", "depto": "K64", "hoja_mr": "Ⅵ", "mr": "AE71", "transf": "red2"},
+    {"hoja_depto": "Costos", "depto": "H65", "hoja_mr": "Ⅵ", "mr": "X72", "transf": "x100_red2"},
+    {"hoja_depto": "Costos", "depto": "K65", "hoja_mr": "Ⅵ", "mr": "AE72", "transf": "x100_red2"}
+  ],
+  "celdas_solo_si": {"hoja_depto": "Costos", "col_depto": {"modo": "fecha_en_fila", "fila": 16}, "fila": 20},
+  "textos": [
+    {"seccion": "Kaizen de costos del mes (cuadro C4:BA13 de la hoja 原価)", "hoja_depto": "Costos", "celda": "C2"},
+    {"seccion": "Tarjeta Henkaten / Improvement Activity (seccion 4 de Production)", "hoja_depto": "FO-012", "celda": "B9"}
+  ],
+  "textos_de_cuadros": [
+    {"seccion": "Cuadros de texto de Costos (volumen, monto por set, resultado, modelo/dado)", "hoja_depto": "Costos"}
+  ],
+  "fotos": [
+    {"seccion": "Fotos kaizen de costos antes/despues (van en F48 y AF48 de la hoja 原価)", "hoja_depto": "Costos", "area_depto": "A40:BA60"},
+    {"seccion": "Fotos tarjeta Henkaten (van en C167 y AC167 de Production)", "hoja_depto": "FO-012", "area_depto": "A75:U205"}
+  ],
+  "manual": ["IMV y HIACE plan/actual (Production BX7:BX10): no estan en el archivo del depto."]
+}
