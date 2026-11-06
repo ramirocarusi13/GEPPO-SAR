@@ -29,13 +29,33 @@ y los pasa al MonthlyReport de Juan Salinas, igual que lo hace él a mano.
 Si Juan tiene el `_AUTO.xlsx` abierto, el programa espera y lo intenta en la próxima vuelta.
 Si un departamento corrige su archivo, se vuelven a cargar **solo las celdas de ese departamento**.
 
-## Instalación (una vez, en la PC que lo va a correr)
+## Instalación en el servidor (recomendado, no depende de ninguna PC)
+
+En el servidor, como administrador:
+
+```
+git clone https://github.com/ramirocarusi13/GEPPO-SAR.git C:\GEPPO-SAR
+powershell -ExecutionPolicy Bypass -File C:\GEPPO-SAR\instalar_servidor.ps1
+```
+
+El script:
+1. Revisa que haya Excel y Python.
+2. Instala lo que falta de Python.
+3. Revisa el acceso a `\\192.168.8.9\publica`.
+4. Crea la tarea "GEPPO carga automatica": corre cada 10 minutos aunque nadie tenga la sesión abierta.
+
+Te pide el usuario y la clave de la cuenta que va a correr la tarea. Esa cuenta tiene que poder leer las carpetas de los departamentos y escribir en `format\FY26`.
+
+En el servidor se usa `config_servidor.json`, que trae la ruta de red en vez de Z:.
+
+Para actualizar el programa: `cd C:\GEPPO-SAR` y `git pull`.
+
+## Instalación en una PC (alternativa)
 
 La PC tiene que tener Excel, acceso a Z: y estar prendida.
 
-1. Copiar la carpeta `geppo_auto` a esa PC.
-2. Instalar Python desde python.org.
-3. Doble clic en `instalar_tarea.bat`.
+1. Instalar Python desde python.org.
+2. Doble clic en `instalar_tarea.bat`.
 
 ## A mano
 
