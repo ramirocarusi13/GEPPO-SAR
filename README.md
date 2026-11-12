@@ -25,6 +25,18 @@ Hace lo mismo que hacía Juan a mano: crea `GEPPO DE <Mes> <Año>` en `Z:\0_Trad
 - **En enero:** crea también la carpeta del año nuevo (ej. `GEPPO\2027`).
 - **Carpeta ya existente:** si alguien ya la creó a mano, no la toca.
 
+## Aviso por mail a los departamentos
+
+Cuando aparece la carpeta del mes nuevo (la cree el programa o Juan a mano), manda **un** mail a los departamentos: "GEPPO Noviembre 2026: ya está la carpeta para cargar", con la ruta de la carpeta.
+
+- **Dónde se configura:** en `correo.json`, al lado del programa. Ese archivo queda solo en el servidor y **no se sube al repo**, porque tiene la clave. Se arma copiando `correo.ejemplo.json` y completando:
+  - el servidor de correo;
+  - la cuenta que envía y su clave;
+  - los destinatarios (`para`, `cc`).
+- **Para probar sin mandar nada:** poner `"modo": "prueba"`. El mail queda guardado como archivo en `correos_prueba\`.
+- **La primera vez que corre:** las carpetas que ya existen se toman como avisadas; solo se avisa la próxima que aparezca.
+- **Para apagarlo:** poner `"activo": false` o borrar `correo.json`.
+
 ## Qué sigue haciendo Juan
 
 1. Abrir el `_AUTO.xlsx` y mirar lo que dice el `- revisar.txt`.

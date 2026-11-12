@@ -918,7 +918,98 @@ def preparar_mes_siguiente(cfg, mes, hoy=None):
     return nueva, copiados, faltan
 
 
+# ------------------------------------------------------------- aviso por mail
+AVISO_ASUNTO = "GEPPO {Mes} {anio}: ya está la carpeta para cargar"
+AVISO_TEXTO = """Hola,
+
+Ya está creada la carpeta del GEPPO de {Mes} {anio} para que cada departamento cargue sus datos:
+
+{carpeta}
+
+Adentro está el archivo de cada departamento con lo cargado el mes anterior. Agreguen los datos de {mes} \
+en su archivo y guárdenlo en esa misma carpeta. El informe se arma solo a medida que lo van guardando.
+
+Gracias.
+
+(Mensaje automático del GEPPO)"""
+
+
+def cargar_correo():
+    """Datos del correo en correo.json (queda solo en el servidor: tiene la clave, no se sube al repo)."""
+    p = os.path.join(AQUI, "correo.json")
+    if not os.path.exists(p):
+        return None
+    with open(p, encoding="utf-8-sig") as f:
+        c = json.load(f)
+    return c if c.get("activo", True) else None
+
+
+def enviar_aviso(correo, mes, carpeta):
+    from email.message import EmailMessage
+    mostrar = carpeta
+    for a, b in correo.get("reemplazar_ruta", {}).items():  # ej. \\192.168.8.9\publica -> Z:
+        if mostrar.lower().startswith(a.lower()):
+            mostrar = b + mostrar[len(a):]
+    v = {"mes": MESES[int(mes[4:]) - 1], "Mes": MESES[int(mes[4:]) - 1].capitalize(),
+         "MES": MESES[int(mes[4:]) - 1].upper(), "anio": mes[:4], "carpeta": mostrar}
+    msg = EmailMessage()
+    msg["Subject"] = correo.get("asunto", AVISO_ASUNTO).format(**v)
+    msg["From"] = correo["de"]
+    msg["To"] = ", ".join(correo["para"])
+    if correo.get("cc"):
+        msg["Cc"] = ", ".join(correo["cc"])
+    msg.set_content(correo.get("texto", AVISO_TEXTO).format(**v))
+    if correo.get("modo", "smtp") == "prueba":  # no envia: deja el mail como archivo para mirarlo
+        d = os.path.join(AQUI, "correos_prueba")
+        os.makedirs(d, exist_ok=True)
+        p = os.path.join(d, f"aviso_{mes}_{dt.datetime.now():%Y%m%d_%H%M%S}.eml")
+        with open(p, "wb") as f:
+            f.write(bytes(msg))
+        return f"(modo prueba) guardado en {p}"
+    import smtplib
+    with smtplib.SMTP(correo["servidor"], int(correo.get("puerto", 587)), timeout=30) as s:
+        if correo.get("tls", True):
+            s.starttls()
+        if correo.get("usuario"):
+            s.login(correo["usuario"], correo.get("clave") or os.environ.get("GEPPO_CORREO_CLAVE", ""))
+        s.send_message(msg)
+    return f"enviado a {len(correo['para']) + len(correo.get('cc', []))} direcciones"
+
+
+def avisar_carpetas_nuevas(cfg, hoy=None):
+    """Cuando aparece la carpeta del mes (la cree Juan o el programa), manda un mail a los deptos. Una sola vez."""
+    correo = cargar_correo()
+    if not correo:
+        return
+    hoy = hoy or dt.date.today()
+    actual = f"{hoy:%Y%m}"
+    carpetas = [(m, c) for m in (actual, mes_siguiente(actual)) for c in [carpeta_del_mes(cfg, m)] if c]
+    estado = leer_estado()
+    avisadas = estado.get("_avisos_carpetas")
+    if avisadas is None:  # primera vez: las carpetas que ya existen no se avisan
+        estado["_avisos_carpetas"] = {os.path.normcase(c): "ya existia" for _, c in carpetas}
+        guardar_estado(estado)
+        log("Aviso por mail activado: se avisara la proxima carpeta de mes que aparezca")
+        return
+    for mes, c in carpetas:
+        clave = os.path.normcase(c)
+        if clave in avisadas:
+            continue
+        archivos = [f for f in glob.glob(os.path.join(c, "*")) if os.path.isfile(f) and not os.path.basename(f).startswith("~$")]
+        if not archivos or time.time() - max(os.path.getctime(f) for f in archivos) < SEGUNDOS_ESTABLE:
+            continue  # recien creada: se espera a que terminen de copiarse los archivos
+        try:
+            r = enviar_aviso(correo, mes, c)
+            avisadas[clave] = f"{dt.datetime.now():%Y-%m-%d %H:%M}"
+            guardar_estado(estado)
+            log(f"Aviso de carpeta nueva ({os.path.basename(c)}): {r}")
+        except Exception as e:
+            log(f"No pude mandar el aviso de {os.path.basename(c)}: {e}. Reintento en la proxima vuelta.")
+
+
 def una_vuelta(cfg, mes_fijo=None, forzar=False):
+    if not mes_fijo:
+        avisar_carpetas_nuevas(cfg)
     meses = [mes_fijo] if mes_fijo else [mes_vencido(), f"{dt.date.today():%Y%m}"]
     hubo = False
     for mes in meses:

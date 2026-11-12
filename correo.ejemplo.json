@@ -1,0 +1,14 @@
+{
+  "_comentario": "Copiar como correo.json en el servidor y completar. correo.json NO se sube al repo (tiene la clave).",
+  "activo": true,
+  "modo": "smtp",
+  "servidor": "smtp.office365.com",
+  "puerto": 587,
+  "tls": true,
+  "usuario": "geppo@empresa.com",
+  "clave": "",
+  "de": "GEPPO automatico <geppo@empresa.com>",
+  "para": ["rrhh@empresa.com", "calidad@empresa.com", "produccion@empresa.com", "seguridad@empresa.com"],
+  "cc": ["juan.salinas@empresa.com"],
+  "reemplazar_ruta": {"\\\\192.168.8.9\\publica": "Z:"}
+}
