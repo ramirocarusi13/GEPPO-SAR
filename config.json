@@ -5,6 +5,7 @@
   "carpeta_salida": "Z:/0_Traducciones/GEPPO/format/FY26",
   "nombre_salida": "MonthlyReport_SAR_{mes}_AUTO.xlsx",
   "minutos_entre_revisiones": 10,
+  "dia_limite_carpeta": 10,
   "produccion": {
     "carpeta_deptos": "Z:/0_Traducciones/GEPPO/{anio}",
     "carpeta_format": "Z:/0_Traducciones/GEPPO/format/FY26",

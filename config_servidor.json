@@ -4,5 +4,6 @@
   "carpeta_format": "//192.168.8.9/publica/0_Traducciones/GEPPO/format/FY26",
   "carpeta_salida": "//192.168.8.9/publica/0_Traducciones/GEPPO/format/FY26",
   "nombre_salida": "MonthlyReport_SAR_{mes}_AUTO.xlsx",
-  "minutos_entre_revisiones": 10
+  "minutos_entre_revisiones": 10,
+  "dia_limite_carpeta": 10
 }

@@ -776,13 +776,18 @@ def mapeos():
 
 
 # ------------------------------------------------------------- proceso
+def mes_siguiente(mes):
+    y, m = int(mes[:4]), int(mes[4:])
+    return f"{y + 1}01" if m == 12 else f"{y}{m + 1:02d}"
+
+
 def procesar(cfg, mes, forzar=False):
     estado = leer_estado()
     salida = os.path.join(ruta(cfg["carpeta_salida"]), cfg["nombre_salida"].format(mes=mes))
     em = estado.setdefault(salida, {})
+    completo = em.setdefault("_completo", {})
     carpeta = carpeta_del_mes(cfg, mes)
     if not carpeta:
-        log(f"{mes}: todavia no existe la carpeta de {MESES[int(mes[4:]) - 1].upper()} de los departamentos")
         return False
 
     pendientes = []
@@ -799,6 +804,25 @@ def procesar(cfg, mes, forzar=False):
             continue
         pendientes.append((m, f, firma))
     if not pendientes:
+        return False
+
+    # primero se lee lo que trae cada depto; el informe se abre solo si alguno ya cargo el mes
+    con_datos = []
+    for m, f, firma in pendientes:
+        try:
+            plan = armar_plan(m, f, mes)
+        except Exception as e:
+            log(f"[{m['nombre']}] ERROR leyendo {os.path.basename(f)}: {e}")
+            continue
+        falta = [a for a in plan.avisos if "todavia no" in a or "esta vacia" in a]
+        completo[m["key"]] = bool(plan.bloques_cargados) and not falta
+        if not plan.escrituras:
+            log(f"[{m['nombre']}] todavia no cargo {MESES[int(mes[4:]) - 1]} ({os.path.basename(f)})")
+            em[m["key"]] = firma
+        else:
+            con_datos.append((m, f, firma, plan))
+    if not con_datos:
+        guardar_estado(estado)
         return False
 
     os.makedirs(os.path.dirname(salida), exist_ok=True)
@@ -819,7 +843,7 @@ def procesar(cfg, mes, forzar=False):
             log(f"{os.path.basename(salida)} lo tiene abierto alguien. Reintento en la proxima vuelta.")
             return False
         # si el informe se guardo con varias hojas seleccionadas (agrupadas), Excel no deja
-        # agregar hojas: se deja seleccionada solo la primera hoja visible
+        # agregar ni pegar: se deja seleccionada solo la primera hoja visible
         for i in range(1, wb_mr.Worksheets.Count + 1):
             if wb_mr.Worksheets(i).Visible == -1:
                 wb_mr.Worksheets(i).Select(True)
@@ -832,13 +856,8 @@ def procesar(cfg, mes, forzar=False):
             for h, c, v in titulos_del_mes(wb_mr, mes):
                 log(f"titulo actualizado {h}!{c}: {v}")
         hubo = False
-        for m, f, firma in pendientes:
+        for m, f, firma, plan in con_datos:
             try:
-                plan = armar_plan(m, f, mes)
-                if not plan.escrituras:
-                    log(f"[{m['nombre']}] todavia no cargo {MESES[int(mes[4:]) - 1]} ({os.path.basename(f)})")
-                    em[m["key"]] = firma
-                    continue
                 hechas, saltadas = aplicar(wb_mr, m, plan, mes)
                 ntx = nfo = 0
                 if plan.bloques_cargados:
@@ -865,9 +884,54 @@ def procesar(cfg, mes, forzar=False):
     return True
 
 
+def preparar_mes_siguiente(cfg, mes, hoy=None):
+    """Lo que hace Juan: crea la carpeta 'GEPPO DE <Mes> <Anio>' del mes siguiente con los archivos del mes
+    que se acaba de cerrar, para que cada depto abra el suyo y agregue el mes.
+    Se crea apenas todos los deptos terminaron el mes, o el dia 'dia_limite_carpeta' aunque falte alguno."""
+    hoy = hoy or dt.date.today()
+    sig = mes_siguiente(mes)
+    if carpeta_del_mes(cfg, sig):
+        return None
+    actual = carpeta_del_mes(cfg, mes)
+    if not actual:
+        return None
+    estado = leer_estado()
+    salida = os.path.join(ruta(cfg["carpeta_salida"]), cfg["nombre_salida"].format(mes=mes))
+    completo = estado.get(salida, {}).get("_completo", {})
+    deptos = [m for m in mapeos() if archivo_depto(actual, m)]
+    faltan = [m["nombre"] for m in deptos if not completo.get(m["key"])]
+    # fecha tope: el dia_limite del mes siguiente al cerrado (ej. octubre cerrado -> 10 de noviembre)
+    tope = dt.date(int(sig[:4]), int(sig[4:]), int(cfg.get("dia_limite_carpeta", 10)))
+    if faltan and hoy < tope:
+        return None
+    base = ruta(cfg["carpeta_deptos"].format(anio=sig[:4]))
+    nueva = os.path.join(base, f"GEPPO DE {MESES[int(sig[4:]) - 1].capitalize()} {sig[:4]}")
+    os.makedirs(nueva, exist_ok=True)
+    copiados = []
+    for f in sorted(glob.glob(os.path.join(actual, "*"))):
+        n = os.path.basename(f)
+        if os.path.isfile(f) and not n.startswith("~$"):
+            shutil.copy2(f, os.path.join(nueva, n))
+            copiados.append(n)
+    log(f"Cree la carpeta {nueva} con {len(copiados)} archivos de {MESES[int(mes[4:]) - 1]}"
+        + (f" (todavia faltaba terminar: {', '.join(faltan)})" if faltan else " (todos los deptos terminaron)"))
+    return nueva, copiados, faltan
+
+
+def una_vuelta(cfg, mes_fijo=None, forzar=False):
+    meses = [mes_fijo] if mes_fijo else [mes_vencido(), f"{dt.date.today():%Y%m}"]
+    hubo = False
+    for mes in meses:
+        if procesar(cfg, mes, forzar):
+            hubo = True
+    if not mes_fijo:
+        preparar_mes_siguiente(cfg, mes_vencido())
+    return hubo
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mes", help="YYYYMM (por defecto el mes vencido)")
+    ap.add_argument("--mes", help="YYYYMM (por defecto el mes vencido y el mes en curso)")
     ap.add_argument("--vigilar", action="store_true")
     ap.add_argument("--forzar", action="store_true")
     ap.add_argument("--produccion", action="store_true", help="usar las rutas reales de Z:")
@@ -876,19 +940,18 @@ def main():
     cfg = cargar_config(a.produccion, a.config)
 
     if not a.vigilar:
-        mes = a.mes or mes_vencido()
-        if not procesar(cfg, mes, a.forzar):
-            log(f"{mes}: nada nuevo para cargar")
+        if not una_vuelta(cfg, a.mes, a.forzar):
+            log("nada nuevo para cargar")
         return
 
     log("Vigilando las carpetas de los departamentos (Ctrl+C para salir)")
     while True:
         try:
-            procesar(cfg, a.mes or mes_vencido(), a.forzar)
+            una_vuelta(cfg, a.mes, a.forzar)
             a.forzar = False
         except Exception as e:
             log(f"ERROR: {e}\n{traceback.format_exc()}")
-        time.sleep(60 * cfg.get("minutos_entre_revisiones", 5))
+        time.sleep(60 * cfg.get("minutos_entre_revisiones", 10))
 
 
 if __name__ == "__main__":

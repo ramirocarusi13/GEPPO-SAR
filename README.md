@@ -14,6 +14,16 @@ y los pasa al MonthlyReport de Juan Salinas, igual que lo hace él a mano.
   - **Fotos del departamento:** en el lugar donde estaban las del mes anterior, en el mismo espacio. Las del mes anterior se borran.
 - Lo que conviene revisar queda en `MonthlyReport_SAR_YYYYMM_AUTO - revisar.txt`, al lado del informe. Por ejemplo, números donde Juan suele corregir algo o textos que vinieron en castellano.
 - Nunca modifica los archivos de los departamentos ni el MonthlyReport original de Juan.
+- Revisa el mes vencido y también el mes en curso: si un departamento carga el último día del mes, lo toma en el momento.
+
+## Carpeta del mes nuevo
+
+Hace lo mismo que hacía Juan a mano: crea `GEPPO DE <Mes> <Año>` en `Z:\0_Traducciones\GEPPO\<Año>` y copia ahí los archivos del mes que se cerró, para que cada departamento abra el suyo y agregue el mes.
+
+- **Cuándo:** apenas los 4 departamentos terminaron el mes anterior (normalmente entre el 2 y el 5).
+- **Si alguno se atrasa:** la crea igual el día `dia_limite_carpeta` del `config.json` (10 por defecto) y deja anotado en `registro.log` quién faltaba.
+- **En enero:** crea también la carpeta del año nuevo (ej. `GEPPO\2027`).
+- **Carpeta ya existente:** si alguien ya la creó a mano, no la toca.
 
 ## Qué sigue haciendo Juan
 
