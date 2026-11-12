@@ -297,6 +297,11 @@ def armar_plan(mapeo, archivo, mes):
                     p.escrituras.append((pa["hoja_mr"], f"{col_letra(mc + j)}{fila}", v, org, True))
     finally:
         wb.close()
+    # celdas que no salen del archivo del depto: se avisan para que Juan las complete
+    if p.bloques_cargados:
+        for a in mapeo.get("a_mano", []):
+            celda = a["celda"] if "celda" in a else f"{col_letra(col_mr(a['col_mr'], mes))}{a['fila']}"
+            p.revisar.append((a["hoja_mr"], celda, "Completar a mano: " + a["que"]))
     return p
 
 

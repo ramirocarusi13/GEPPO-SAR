@@ -85,7 +85,6 @@
     {"_que": "Kaizen de costos: antes", "hoja_depto": "Costos", "area_depto": "A45:N60", "hoja_mr": "Ⅵ", "area_mr": "C48:Z60", "zona_mr": "A45:AB61"},
     {"_que": "Kaizen de costos: despues", "hoja_depto": "Costos", "area_depto": "O45:Z60", "hoja_mr": "Ⅵ", "area_mr": "AD48:AY60", "zona_mr": "AC45:BB61"}
   ],
-  "manual": ["IMV y HIACE plan/actual (Production BX7:BX10): no estan en el archivo del depto."],
   "cuadros": [
     {
       "hoja_mr": "Ⅵ",
@@ -181,5 +180,44 @@
       "encabezado": "Line Improvement Activity: ",
       "empieza_con": "Line Improvement Activity"
     }
+  ],
+  "a_mano": [
+    {
+      "hoja_mr": "Production",
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2025-04"},
+      "fila": 7,
+      "que": "IMV plan del mes (vehiculos Toyota; no esta en el archivo de Produccion)"
+    },
+    {
+      "hoja_mr": "Production",
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2025-04"},
+      "fila": 8,
+      "que": "IMV real del mes"
+    },
+    {
+      "hoja_mr": "Production",
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2025-04"},
+      "fila": 9,
+      "que": "Hiace plan del mes"
+    },
+    {
+      "hoja_mr": "Production",
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2025-04"},
+      "fila": 10,
+      "que": "Hiace real del mes"
+    },
+    {
+      "hoja_mr": "Production",
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2025-04"},
+      "fila": 14,
+      "que": "personal temporal (Tempo)"
+    },
+    {
+      "hoja_mr": "Production",
+      "col_mr": {"modo": "mes_desde", "col": "BG", "mes": "2025-04"},
+      "fila": 20,
+      "que": "horas extra (Over Time)"
+    },
+    {"hoja_mr": "Production", "celda": "cuadro en C4", "que": "texto 'Special note' de arriba (volumen del mes vs plan)"}
   ]
 }
