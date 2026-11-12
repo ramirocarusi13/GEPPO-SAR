@@ -76,20 +76,104 @@
       "celda_mr": "BF82",
       "filas_mr": 6,
       "acumulado": false,
-      "traducir": false,
+      "traducir": true,
       "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 3}, "fila": 31}
     }
   ],
-  "glosario": {"Heater equivocado": "Wrong Heater", "Etiqueta Desplazada": "Lavel of out possition", "Paño Equivocado": "Wrong Material", "Costura no toma Material": "Seam does not catch material", "Etiqueta Soldada NG": "Welded Label NG"},
-  "textos": [
-    {"seccion": "Defecto de cliente del mes (cuadro B14 del MR)", "hoja_depto": "II Calidad -1", "celda": "A19"},
-    {"seccion": "Defecto interno: comentario, causa y C/M (cuadros A69 / B80 / A86 del MR)", "hoja_depto": "II Calidad-2", "celda": "A16"},
-    {"seccion": "Defecto interno: titulo", "hoja_depto": "II Calidad-2", "celda": "A45"},
-    {"seccion": "Proveedores (cuadros A98 / A112 / A117 del MR)", "hoja_depto": "II Calidad-2", "celda": "B51"}
-  ],
+  "glosario": {
+    "Heater equivocado": "Wrong Heater",
+    "Etiqueta Desplazada": "Lavel of out possition",
+    "Paño Equivocado": "Wrong Material",
+    "Costura no toma Material": "Seam does not catch material",
+    "Etiqueta Soldada NG": "Label issues",
+    "MARGEN ANGOSTO": "Narrow margin",
+    "REMACHE DEFECTUOSO": "Defective Backtack",
+    "PLIEGUES": "Fold",
+    "COSTURA EXPUESTA": "Exposed seam",
+    "DESFASE DE MATERIAL": "Mismatch Material",
+    "OTROS": "Others"
+  },
   "fotos": [
-    {"seccion": "Fotos defecto de cliente (van en T16:BB46 del MR)", "hoja_depto": "II Calidad -1", "area_depto": "A19:R60"},
-    {"seccion": "Fotos defecto interno (van en B73:S80 del MR)", "hoja_depto": "II Calidad-2", "area_depto": "A19:F43"},
-    {"seccion": "Fotos proveedores (van en B103:N111 del MR)", "hoja_depto": "II Calidad-2", "area_depto": "A44:F85"}
+    {"_que": "Defecto de cliente", "hoja_depto": "II Calidad -1", "area_depto": "A19:R60", "hoja_mr": "Ⅱ Quality-1", "area_mr": "T16:BB46", "zona_mr": "T14:BB48", "limpiar_toda_la_zona": true},
+    {"_que": "Defecto interno", "hoja_depto": "II Calidad-2", "area_depto": "A19:F30", "hoja_mr": "Ⅱ Quality-1", "area_mr": "B72:S77", "zona_mr": "A66:T79"},
+    {
+      "_que": "Defecto interno: contramedida",
+      "hoja_depto": "II Calidad-2",
+      "area_depto": "A31:F43",
+      "hoja_mr": "Ⅱ Quality-1",
+      "area_mr": "B87:S96",
+      "zona_mr": "A84:T97"
+    },
+    {"_que": "Proveedor: problema", "hoja_depto": "II Calidad-2", "area_depto": "A44:F56", "hoja_mr": "Ⅱ Quality-1", "area_mr": "B102:S109", "zona_mr": "A99:T110"},
+    {
+      "_que": "Proveedor: contramedida",
+      "hoja_depto": "II Calidad-2",
+      "area_depto": "A57:F85",
+      "hoja_mr": "Ⅱ Quality-1",
+      "area_mr": "B117:S122",
+      "zona_mr": "A114:T126"
+    }
+  ],
+  "cuadros": [
+    {
+      "hoja_mr": "Ⅱ Quality-1",
+      "cuadro_en": "B14",
+      "hoja_depto": "II Calidad -1",
+      "celda": "A19",
+      "traducir": true,
+      "encabezado": "◆　Comments\n",
+      "empieza_con": "◆\\s*Comments,"
+    },
+    {
+      "hoja_mr": "Ⅱ Quality-1",
+      "cuadro_en": "A68",
+      "hoja_depto": "II Calidad-2",
+      "celda": "A16",
+      "traducir": true,
+      "antes_de": "C/M\\s*:",
+      "reemplazos": {"^DEFECTOS:\\s*": ""},
+      "encabezado": "◆　Comments: ",
+      "empieza_con": "◆\\s*Comments:"
+    },
+    {
+      "hoja_mr": "Ⅱ Quality-1",
+      "cuadro_en": "A83",
+      "hoja_depto": "II Calidad-2",
+      "celda": "A16",
+      "traducir": true,
+      "despues_de": "C/M\\s*:",
+      "encabezado": "◆　Countermeasure: C/M: ",
+      "empieza_con": "◆\\s*Countermeasure"
+    },
+    {
+      "hoja_mr": "Ⅱ Quality-1",
+      "cuadro_en": "A98",
+      "hoja_depto": "II Calidad-2",
+      "celda": "A45",
+      "traducir": true,
+      "encabezado": "◆Comments:\nSuppliers – ",
+      "empieza_con": "◆\\s*Comments:\\s*Suppliers"
+    },
+    {
+      "hoja_mr": "Ⅱ Quality-1",
+      "cuadro_en": "A110",
+      "hoja_depto": "II Calidad-2",
+      "celda": "B51",
+      "traducir": true,
+      "antes_de": "Contramedida",
+      "encabezado": "Root Cause: ",
+      "empieza_con": "Root Cause\\s*:"
+    },
+    {
+      "hoja_mr": "Ⅱ Quality-1",
+      "cuadro_en": "A114",
+      "hoja_depto": "II Calidad-2",
+      "celda": "B51",
+      "traducir": true,
+      "despues_de": "Contramedida[^:]*:",
+      "encabezado": "Countermeasures: ",
+      "empieza_con": "Countermeasures\\s*:"
+    },
+    {"hoja_mr": "Ⅱ Quality-1", "cuadro_en": "B78", "modo": "vaciar", "empieza_con": "◆\\s*Root Cause", "encabezado": "◆　Root Cause: "}
   ]
 }

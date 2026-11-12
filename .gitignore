@@ -8,3 +8,7 @@ __pycache__/
 salida/
 muestras/
 ~$*
+comparacion/
+geppo_auto/
+estado.json
+registro.log

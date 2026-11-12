@@ -18,7 +18,23 @@
        [150, 146, "pct_a_fraccion"], [152, 148], [153, 149], [169, 165], [171, 167],
        [173, 169, "pct_a_fraccion"], [175, 171], [176, 172]],
       "ops_si_carga": ["ventana_graficos_produccion", "cuadritos_mes_actual_produccion"],
-      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 36}, "fila": 38}
+      "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 36}, "fila": 38},
+      "revisar": {
+        "41": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "42": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "62": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "63": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "85": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "86": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "106": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "107": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "127": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "128": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "148": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "149": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "171": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar.",
+        "172": "Amarillo/Blanco: Juan carga numeros que no estan en el archivo de Produccion. Confirmar."
+      }
     },
     {
       "nombre": "Kaizen de costos: resultado del mes y acumulado",
@@ -45,8 +61,8 @@
       "col_depto": {"modo": "mes_desde", "col": "F", "mes": "2026-04", "paso": 2},
       "col_mr": {"modo": "mes_desde", "col": "P", "mes": "2026-04", "paso": 3},
       "solo_si": {"col_depto": {"modo": "fecha_en_fila", "fila": 16}, "fila": 20},
-      "filas": [[34, 33], [36, 34, "miles_coma"], [38, 35, "miles_coma"]],
-      "revisar": {"33": "Labor: Juan a veces lo pone como numero entero y a veces en miles con coma. Se copio el numero del depto.", "34": "Material: en miles con coma, como lo pone Juan.", "35": "Expenses: en miles con coma, como lo pone Juan."}
+      "filas": [[34, 33], [36, 34], [38, 35]],
+      "_nota": "Desde octubre Juan los carga como numero entero, no en miles con coma."
     }
   ],
   "celdas": [
@@ -61,20 +77,109 @@
     {"hoja_depto": "Costos", "depto": "K63", "hoja_mr": "Ⅵ", "mr": "AE70", "transf": "red2"},
     {"hoja_depto": "Costos", "depto": "H64", "hoja_mr": "Ⅵ", "mr": "X71", "transf": "red2"},
     {"hoja_depto": "Costos", "depto": "K64", "hoja_mr": "Ⅵ", "mr": "AE71", "transf": "red2"},
-    {"hoja_depto": "Costos", "depto": "H65", "hoja_mr": "Ⅵ", "mr": "X72", "transf": "x100_red2"},
-    {"hoja_depto": "Costos", "depto": "K65", "hoja_mr": "Ⅵ", "mr": "AE72", "transf": "x100_red2"}
+    {"hoja_depto": "Costos", "depto": "H65", "hoja_mr": "Ⅵ", "mr": "X72", "transf": "red4"},
+    {"hoja_depto": "Costos", "depto": "K65", "hoja_mr": "Ⅵ", "mr": "AE72", "transf": "red4"}
   ],
   "celdas_solo_si": {"hoja_depto": "Costos", "col_depto": {"modo": "fecha_en_fila", "fila": 16}, "fila": 20},
-  "textos": [
-    {"seccion": "Kaizen de costos del mes (cuadro C4:BA13 de la hoja 原価)", "hoja_depto": "Costos", "celda": "C2"},
-    {"seccion": "Tarjeta Henkaten / Improvement Activity (seccion 4 de Production)", "hoja_depto": "FO-012", "celda": "B9"}
-  ],
-  "textos_de_cuadros": [
-    {"seccion": "Cuadros de texto de Costos (volumen, monto por set, resultado, modelo/dado)", "hoja_depto": "Costos"}
-  ],
   "fotos": [
-    {"seccion": "Fotos kaizen de costos antes/despues (van en F48 y AF48 de la hoja 原価)", "hoja_depto": "Costos", "area_depto": "A40:BA60"},
-    {"seccion": "Fotos tarjeta Henkaten (van en C167 y AC167 de Production)", "hoja_depto": "FO-012", "area_depto": "A75:U205"}
+    {"_que": "Kaizen de costos: antes", "hoja_depto": "Costos", "area_depto": "A45:N60", "hoja_mr": "Ⅵ", "area_mr": "C48:Z60", "zona_mr": "A45:AB61"},
+    {"_que": "Kaizen de costos: despues", "hoja_depto": "Costos", "area_depto": "O45:Z60", "hoja_mr": "Ⅵ", "area_mr": "AD48:AY60", "zona_mr": "AC45:BB61"}
   ],
-  "manual": ["IMV y HIACE plan/actual (Production BX7:BX10): no estan en el archivo del depto."]
+  "manual": ["IMV y HIACE plan/actual (Production BX7:BX10): no estan en el archivo del depto."],
+  "cuadros": [
+    {
+      "hoja_mr": "Ⅵ",
+      "cuadro_en": "C4",
+      "hoja_depto": "Costos",
+      "celda": "C2",
+      "traducir": true,
+      "reemplazos": {"^Kaizen de costos:\\s*": ""}
+    },
+    {
+      "hoja_mr": "Ⅵ",
+      "cuadro_en": "B44",
+      "modo": "desde_cuadro",
+      "hoja_depto": "Costos",
+      "cuadro_depto": "62 CuadroTexto",
+      "reemplazos": {
+        "\\n\\s*\\n": "\n",
+        "MODELO\\s*:\\s*": "MODEL:  ",
+        "\\s*\\n\\s*EN EL DADO\\s*:\\s*": "  /  Dice # :  ",
+        "EFICIENCIA\\s*:\\s*": "Eficiency: ",
+        "\\s*\\n\\s*LONGITUD\\s*:\\s*": "  /  Long: ",
+        "CANT\\. DE VXT\\s*:\\s*": "Qty of VXT:  ",
+        "\\s*\\n\\s*BUFFER DE LONGITUD\\s*:\\s*": "  /  Baffer long : "
+      },
+      "encabezado": "\n",
+      "empieza_con": "MODEL"
+    },
+    {
+      "hoja_mr": "Ⅵ",
+      "cuadro_en": "AC44",
+      "modo": "desde_cuadro",
+      "hoja_depto": "Costos",
+      "cuadro_depto": "63 CuadroTexto",
+      "reemplazos": {
+        "\\n\\s*\\n": "\n",
+        "MODELO\\s*:\\s*": "MODEL:  ",
+        "\\s*\\n\\s*EN EL DADO\\s*:\\s*": "  /  Dice # :  ",
+        "EFICIENCIA\\s*:\\s*": "Eficiency: ",
+        "\\s*\\n\\s*LONGITUD\\s*:\\s*": "  /  Long: ",
+        "CANT\\. DE VXT\\s*:\\s*": "Qty of VXT:  ",
+        "\\s*\\n\\s*BUFFER DE LONGITUD\\s*:\\s*": "  /  Baffer long : "
+      },
+      "encabezado": "\n",
+      "empieza_con": "MODEL"
+    },
+    {
+      "hoja_mr": "Ⅵ",
+      "cuadro_en": "AC61",
+      "modo": "desde_cuadro",
+      "hoja_depto": "Costos",
+      "cuadro_depto": "テキスト ボックス 11",
+      "extraer": "(\\d[\\d.,]*)\\s*set",
+      "plantilla": "{mes_en} production volume {x} set",
+      "empieza_con": "\\w+ production volume"
+    },
+    {
+      "hoja_mr": "Ⅵ",
+      "cuadro_en": "A61",
+      "modo": "desde_cuadro",
+      "hoja_depto": "Costos",
+      "cuadro_depto": "テキスト ボックス 14",
+      "extraer": "(\\d[\\d.,]*)",
+      "plantilla": "Amount per unit: {x}ＵSD",
+      "empieza_con": "Amount per unit:"
+    },
+    {
+      "hoja_mr": "Ⅵ",
+      "cuadro_en": "AC60",
+      "modo": "desde_cuadro",
+      "hoja_depto": "Costos",
+      "cuadro_depto": "テキスト ボックス 23",
+      "extraer": "(\\d[\\d.,]*)",
+      "plantilla": "Amount per unit　：{x} USD",
+      "empieza_con": "Amount per unit\\s*："
+    },
+    {
+      "hoja_mr": "Ⅵ",
+      "cuadro_en": "AC62",
+      "modo": "desde_cuadro",
+      "hoja_depto": "Costos",
+      "cuadro_depto": "テキスト ボックス 10",
+      "extraer": "(\\d[\\d.,]*)",
+      "plantilla": "{mes_en} effect amount　： {x} USD",
+      "empieza_con": "\\w+ effect amount"
+    },
+    {
+      "hoja_mr": "Production",
+      "cuadro_en": "B162",
+      "hoja_depto": "FO-012",
+      "celda": "B9",
+      "traducir": true,
+      "reemplazos": {"^Detalle:\\s*": ""},
+      "encabezado": "Line Improvement Activity: ",
+      "empieza_con": "Line Improvement Activity"
+    }
+  ]
 }

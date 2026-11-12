@@ -11,7 +11,8 @@
       "col_depto": {"modo": "fecha_en_fila", "fila": 1},
       "col_mr": {"modo": "mes_desde", "col": "BS", "mes": "2026-01"},
       "filas": [[2, 4], [3, 5], [4, 6], [5, 7]],
-      "_nota": "Las formulas de acumulado del MR (filas 6/7) suman el objetivo en vez del real. No se pisan: si dan distinto que el depto, se avisa en la hoja AUTO."
+      "_nota": "Las formulas de acumulado del informe suman el objetivo en vez del real: se pisan con el valor del depto, como hizo Juan en octubre.",
+      "pisar_formulas": true
     },
     {
       "nombre": "CO2",
@@ -19,7 +20,8 @@
       "hoja_mr": "Ⅲ Safety",
       "col_depto": {"modo": "fecha_en_fila", "fila": 11},
       "col_mr": {"modo": "mes_desde", "col": "BS", "mes": "2026-01"},
-      "filas": [[12, 16], [13, 17], [14, 18], [15, 19]]
+      "filas": [[12, 16], [13, 17], [14, 18], [15, 19]],
+      "pisar_formulas": true
     },
     {
       "nombre": "Agua (Water)",
@@ -27,13 +29,37 @@
       "hoja_mr": "Ⅲ Safety",
       "col_depto": {"modo": "fecha_en_fila", "fila": 25},
       "col_mr": {"modo": "mes_desde", "col": "BS", "mes": "2026-01"},
-      "filas": [[26, 28], [27, 29], [28, 30], [29, 31]]
+      "filas": [[26, 28], [27, 29], [28, 30], [29, 31]],
+      "pisar_formulas": true
     }
   ],
-  "textos": [
-    {"seccion": "Residuos (cuadro B4 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A4"},
-    {"seccion": "CO2 (cuadro B20 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A16"},
-    {"seccion": "Agua (cuadro B34 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A28"},
-    {"seccion": "Otros (cuadro B51 del MR)", "hoja_depto": "Ⅲ Seguridad", "celda": "A42"}
+  "cuadros": [
+    {
+      "hoja_mr": "Ⅲ Safety",
+      "cuadro_en": "B4",
+      "hoja_depto": "Ⅲ Seguridad",
+      "celda": "A4",
+      "reemplazos": {"^◆\\s*Comentarios": "◆Comments"},
+      "empieza_con": "◆\\s*Comments"
+    },
+    {
+      "hoja_mr": "Ⅲ Safety",
+      "cuadro_en": "B20",
+      "hoja_depto": "Ⅲ Seguridad",
+      "celda": "A16",
+      "reemplazos": {"^◆\\s*Comentarios": "◆Comments"},
+      "empieza_con": "◆\\s*Comments"
+    },
+    {
+      "hoja_mr": "Ⅲ Safety",
+      "cuadro_en": "B34",
+      "hoja_depto": "Ⅲ Seguridad",
+      "celda": "A28",
+      "reemplazos": {"^◆\\s*Comentarios": "◆Comments"},
+      "empieza_con": "◆\\s*Comments"
+    }
+  ],
+  "fotos": [
+    {"_que": "Foto de actividades (CO2)", "hoja_depto": "Ⅲ Seguridad", "area_depto": "A16:S27", "hoja_mr": "Ⅲ Safety", "area_mr": "E25:N32", "zona_mr": "B20:S33"}
   ]
 }

@@ -71,13 +71,40 @@
     }
   ],
   "valores_de_col_anterior": [{"hoja_mr": "Ⅳ", "col_mr": {"modo": "mes_desde", "col": "BH", "mes": "2026-01"}, "filas": [41, 42]}],
-  "textos": [
-    {"seccion": "Dotacion / SDL (cuadro A4 del MR)", "hoja_depto": "Ⅳ", "celda": "A5"},
-    {"seccion": "Directos (cuadro A22 del MR)", "hoja_depto": "Ⅳ", "celda": "A22"},
-    {"seccion": "Indirectos y oficina (cuadro B38 del MR)", "hoja_depto": "Ⅳ", "celda": "A41"},
-    {"seccion": "Ausentismo (cuadro A51 del MR)", "hoja_depto": "Ⅳ", "celda": "A53"},
-    {"seccion": "Rotacion (cuadro A66 del MR)", "hoja_depto": "Ⅳ", "celda": "A70"},
-    {"seccion": "Seguridad: caso FA y contramedida (cuadros A107 / B121 del MR)", "hoja_depto": "Ⅳ", "celda": "A108"}
+  "fotos": [
+    {"_que": "Fotos del accidente", "hoja_depto": "Ⅳ", "area_depto": "S110:BH130", "hoja_mr": "Ⅳ", "area_mr": "B120:S127", "zona_mr": "A110:S131"}
   ],
-  "fotos": [{"seccion": "Fotos del accidente (van en B113:S120 del MR)", "hoja_depto": "Ⅳ", "area_depto": "S110:BD130"}]
+  "cuadros": [
+    {
+      "hoja_mr": "Ⅳ",
+      "cuadro_en": "A4",
+      "hoja_depto": "Ⅳ",
+      "celda": "A5",
+      "traducir": true,
+      "encabezado": "【TARGET PERIOD】\n{periodo}\n",
+      "empieza_con": "【TARGET PERIOD】"
+    },
+    {"hoja_mr": "Ⅳ", "cuadro_en": "A22", "modo": "solo_periodo", "empieza_con": "Target period"},
+    {"hoja_mr": "Ⅳ", "cuadro_en": "B38", "modo": "solo_periodo", "empieza_con": "Target period"},
+    {
+      "hoja_mr": "Ⅳ",
+      "cuadro_en": "A51",
+      "hoja_depto": "Ⅳ",
+      "celda": "A53",
+      "traducir": true,
+      "encabezado": "Target period\n{periodo}\n",
+      "empieza_con": "Target period"
+    },
+    {
+      "hoja_mr": "Ⅳ",
+      "cuadro_en": "A66",
+      "hoja_depto": "Ⅳ",
+      "celda": "A70",
+      "traducir": true,
+      "encabezado": "Target Period\n{periodo}\n\n",
+      "empieza_con": "Target period"
+    },
+    {"hoja_mr": "Ⅳ", "cuadro_en": "A82", "modo": "solo_periodo", "empieza_con": "Target period"},
+    {"hoja_mr": "Ⅳ", "cuadro_en": "A107", "hoja_depto": "Ⅳ", "celda": "A108", "encabezado": "{mes_en}\n", "empieza_con": "\\w+\\s+\\d+\\s+incident"}
+  ]
 }

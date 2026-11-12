@@ -8,23 +8,23 @@ y los pasa al MonthlyReport de Juan Salinas, igual que lo hace él a mano.
 - Cada 10 minutos mira si algún departamento subió o cambió su archivo del mes vencido.
 - Si cambió, carga sus números en `MonthlyReport_SAR_YYYYMM_AUTO.xlsx`, en la carpeta `format\FY26`.
   - Si ese archivo no existe, lo crea copiando el MonthlyReport de Juan de ese mes. Si Juan todavía no lo creó, copia el del mes anterior.
-- Por cada departamento agrega una hoja naranja **"AUTO …"** con:
-  - lo que hay que **revisar** (números donde Juan suele corregir algo);
-  - los **textos** del departamento, para redactar los comentarios en inglés;
-  - las **fotos** del departamento, para arrastrarlas a su lugar;
-  - la lista de **cada celda cargada** y de dónde salió.
+- Completa **las mismas hojas del informe**, sin agregar hojas nuevas:
+  - **Números:** en la columna del mes.
+  - **Textos del departamento:** en sus cuadros de comentarios, con el período puesto solo (ej. "Sept 21st - Oct 20th").
+  - **Fotos del departamento:** en el lugar donde estaban las del mes anterior, en el mismo espacio. Las del mes anterior se borran.
+- Lo que conviene revisar queda en `MonthlyReport_SAR_YYYYMM_AUTO - revisar.txt`, al lado del informe. Por ejemplo, números donde Juan suele corregir algo o textos que vinieron en castellano.
 - Nunca modifica los archivos de los departamentos ni el MonthlyReport original de Juan.
 
 ## Qué sigue haciendo Juan
 
-1. Abrir el `_AUTO.xlsx` y revisar lo marcado en las hojas AUTO.
-2. Redactar los comentarios en inglés y acomodar las fotos.
+1. Abrir el `_AUTO.xlsx` y mirar lo que dice el `- revisar.txt`.
+2. Pasar a inglés los textos que vinieron en castellano y retocar lo que quiera.
 3. Cargar lo que no sale de ningún departamento:
    - Management Summary: lo copia del Excel de finanzas que le llega por mail.
    - IMV/HIACE plan y real.
    - A&F (ventas y ganancia).
    - Cumulate PPM.
-4. Borrar las hojas AUTO, guardar con el nombre final y exportar el PDF.
+4. Guardar con el nombre final y exportar el PDF.
 
 Si Juan tiene el `_AUTO.xlsx` abierto, el programa espera y lo intenta en la próxima vuelta.
 Si un departamento corrige su archivo, se vuelven a cargar **solo las celdas de ese departamento**.

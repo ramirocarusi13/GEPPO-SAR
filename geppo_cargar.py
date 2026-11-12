@@ -1,4 +1,4 @@
-﻿"""
+"""
 GEPPO automatico: toma los Excel que cargan los departamentos y los pasa al
 MonthlyReport de Juan Salinas, como lo hace el a mano.
 
@@ -10,9 +10,9 @@ Uso:
   py geppo_cargar.py --produccion    -> usa las rutas reales de Z: (ver config.json)
 
 Nunca modifica los archivos de los departamentos ni el MonthlyReport original de Juan:
-escribe en "MonthlyReport_SAR_YYYYMM_AUTO.xlsx". Por cada depto agrega una hoja
-"AUTO <depto>" con lo que cargo, lo que hay que revisar, los textos y las fotos del depto.
-Esas hojas se borran antes de enviar el informe.
+escribe en "MonthlyReport_SAR_YYYYMM_AUTO.xlsx", completando las mismas hojas del informe
+(numeros, cuadros de texto y fotos). Lo que hay que revisar queda en
+"MonthlyReport_SAR_YYYYMM_AUTO - revisar.txt", al lado del informe.
 """
 import argparse, datetime as dt, fnmatch, glob, json, os, re, shutil, time, traceback, warnings
 from decimal import Decimal, ROUND_HALF_UP
@@ -43,7 +43,7 @@ def ruta(p):
 
 
 def cargar_config(produccion=False, archivo=None):
-    with open(archivo or os.path.join(AQUI, "config.json"), encoding="utf-8") as f:
+    with open(archivo or os.path.join(AQUI, "config.json"), encoding="utf-8-sig") as f:
         cfg = json.load(f)
     if archivo:  # rutas relativas al archivo de config
         base = os.path.dirname(os.path.abspath(archivo))
@@ -293,7 +293,8 @@ def armar_plan(mapeo, archivo, mes):
                     org = f"{pa['nombre']} (fila vacia)"
                     vals = [None, 0] + ([None] if pa.get("acumulado") else [])  # Juan deja 0 en las filas vacias
                 for j, v in enumerate(vals):
-                    p.escrituras.append((pa["hoja_mr"], f"{col_letra(mc + j)}{fila}", v, org, False))
+                    # Juan a veces deja cuentas tipo =2998+349: se reemplazan por el valor del depto
+                    p.escrituras.append((pa["hoja_mr"], f"{col_letra(mc + j)}{fila}", v, org, True))
     finally:
         wb.close()
     return p
@@ -380,7 +381,7 @@ def op_ventana_graficos_produccion(wb, mes):
     if delta == 0:
         return "ventana de graficos: ya estaba en el mes"
     n = 0
-    for rango in ["F18:AX18", "F20:AJ22", "F23:AL23", "F34:AH38"]:  # la fila 39 Juan no la corre
+    for rango in ["F18:AX18", "F20:AJ22", "F23:AL23", "F34:AH39"]:
         for cel in ws.Range(rango):
             f = cel.Formula
             if isinstance(f, str) and f.startswith("="):
@@ -474,149 +475,277 @@ def titulos_del_mes(wb_mr, mes):
     return cambios
 
 
-# --------------------------------------------------- hoja AUTO de cada depto
-def hoja_auto(xl, wb_mr, mapeo, archivo, mes, hechas, saltadas, plan):
-    nombre = f"AUTO {mapeo['nombre']}"[:31]
-    for n in hojas_com(wb_mr):
-        if n == nombre:
-            wb_mr.Worksheets(n).Delete()
-    ws = wb_mr.Worksheets.Add(After=wb_mr.Worksheets(wb_mr.Worksheets.Count))
-    ws.Name = nombre
-    ws.Tab.Color = 0x00C0FF
-    ws.Columns("A").ColumnWidth = 30
-    ws.Columns("B").ColumnWidth = 12
-    ws.Columns("C").ColumnWidth = 60
-    ws.Columns("D").ColumnWidth = 40
+# --------------------------------------------------- textos y fotos en el informe
+ABR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"]
+_MES_RE = r"(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?"
+PERIODO_RE = re.compile(_MES_RE + r"\s*\d{1,2}(?:st|nd|rd|th)?\s*[-~]\s*" + _MES_RE + r"\s*\d{1,2}(?:st|nd|rd|th)?", re.I)
 
-    fila = [1]
-    def esc(*vals, negrita=False, color=None):
-        for i, v in enumerate(vals):
-            c = ws.Cells(fila[0], i + 1)
-            c.Value = a_com(v) if not isinstance(v, str) else ("'" + v if v.startswith("=") else v)
-            if negrita:
-                c.Font.Bold = True
-            if color:
-                c.Interior.Color = color
-        fila[0] += 1
 
-    mod = dt.datetime.fromtimestamp(os.path.getmtime(archivo))
-    esc(f"Carga automatica {mapeo['nombre']} - {MESES[int(mes[4:]) - 1].upper()} {mes[:4]}", negrita=True)
-    esc("Archivo del depto:", os.path.basename(archivo))
-    esc("Guardado por el depto:", f"{mod:%d/%m/%Y %H:%M}")
-    esc("Cargado al MonthlyReport:", f"{dt.datetime.now():%d/%m/%Y %H:%M}")
-    esc("BORRAR ESTA HOJA ANTES DE ENVIAR EL INFORME", color=0x99FFFF, negrita=True)
-    fila[0] += 1
+def periodo(mes):
+    """Periodo que usa Juan: del 21 del mes anterior al 20 del mes. Ej: 'Sept 21st - Oct 20th'."""
+    m = int(mes[4:])
+    return f"{ABR[(m - 2) % 12]} 21st - {ABR[m - 1]} 20th"
 
-    if plan.revisar:
-        esc("PARA REVISAR", negrita=True, color=0x99FFFF)
-        for h, c, motivo in plan.revisar:
-            esc(h, c, motivo)
-        fila[0] += 1
-    if plan.avisos:
-        esc("AVISOS", negrita=True)
-        for a in plan.avisos:
-            esc("", "", a)
-        fila[0] += 1
 
-    # textos del depto para que Juan los redacte en el informe
-    textos = []
-    wb_d = None
-    try:
-        if mapeo.get("textos") or mapeo.get("fotos") or mapeo.get("textos_de_cuadros"):
-            wb_d = xl.abrir(archivo, solo_lectura=True)
-        for t in mapeo.get("textos", []):
-            try:
-                v = hoja_com(wb_d, t["hoja_depto"]).Range(t["celda"]).Value
-            except Exception:
-                v = None
-            if isinstance(v, str) and v.strip() and len(v.strip()) > 3:
-                textos.append((t["seccion"], v.strip()))
-        for t in mapeo.get("textos_de_cuadros", []):
-            try:
-                wsd = hoja_com(wb_d, t["hoja_depto"])
-                partes = []
-                for i in range(1, wsd.Shapes.Count + 1):
-                    s = wsd.Shapes(i)
-                    try:
-                        if s.HasTextFrame and s.TextFrame2.HasText:
-                            partes.append(s.TextFrame2.TextRange.Text.strip())
-                    except Exception:
-                        pass
-                if partes:
-                    textos.append((t["seccion"], "\n---\n".join(partes)))
-            except KeyError:
-                pass
-        if textos:
-            esc("TEXTOS DEL DEPTO (para redactar los comentarios del informe)", negrita=True)
-            for sec, txt in textos:
-                ws.Cells(fila[0], 1).Value = sec
-                c = ws.Range(ws.Cells(fila[0], 3), ws.Cells(fila[0], 4))
-                c.Merge()
-                c.WrapText = True
-                c.VerticalAlignment = -4160  # arriba
-                ws.Cells(fila[0], 3).Value = txt.replace("\r", "")
-                ws.Rows(fila[0]).RowHeight = min(409, 15 * (txt.count("\n") + 1 + len(txt) // 90))
-                fila[0] += 1
-            fila[0] += 1
+def texto_de(shape):
+    for leer in (lambda: shape.TextFrame2.TextRange.Text, lambda: shape.TextFrame.Characters().Text):
+        try:
+            t = leer()
+            if t:
+                return t
+        except Exception:
+            pass
+    return ""
 
-        # fotos del depto
-        total_fotos = 0
-        for fr in mapeo.get("fotos", []):
-            try:
-                wsd = hoja_com(wb_d, fr["hoja_depto"])
-            except KeyError:
+
+def buscar_cuadro(ws, regla):
+    """El cuadro de texto del informe: por la celda donde arranca (cuadro_en) y/o por su nombre."""
+    mejor = None
+    for i in range(1, ws.Shapes.Count + 1):
+        s = ws.Shapes(i)
+        if s.Type in (3, 13, 11):
+            continue
+        try:
+            if regla.get("cuadro_en") and s.TopLeftCell.Address.replace("$", "") != regla["cuadro_en"]:
                 continue
-            area = wsd.Range(fr["area_depto"])
-            fotos = []
-            for i in range(1, wsd.Shapes.Count + 1):
-                s = wsd.Shapes(i)
+            if regla.get("cuadro_nombre") and s.Name != regla["cuadro_nombre"]:
+                continue
+            s.TextFrame2.TextRange  # si la forma no tiene texto, esto falla
+        except Exception:
+            continue
+        if mejor is None or s.Width * s.Height > mejor.Width * mejor.Height:
+            mejor = s
+    if mejor is not None or not regla.get("empieza_con") or not regla.get("cuadro_en"):
+        return mejor
+    # Juan a veces mueve los cuadros unas filas: se busca el mas cercano que empiece con el rotulo esperado
+    ancla = ws.Range(regla["cuadro_en"])
+    mejor_dist = None
+    for i in range(1, ws.Shapes.Count + 1):
+        s = ws.Shapes(i)
+        if s.Type in (3, 13, 11):
+            continue
+        t = texto_de(s).lstrip()
+        if not t or not re.match(regla["empieza_con"], t, re.I):
+            continue
+        try:
+            celda = s.TopLeftCell
+            dist = abs(celda.Row - ancla.Row) + abs(celda.Column - ancla.Column) / 4
+        except Exception:
+            continue
+        if dist <= 40 and (mejor_dist is None or dist < mejor_dist):
+            mejor, mejor_dist = s, dist
+    return mejor
+
+
+def limpiar(t, regla):
+    t = (t or "").replace("\r\n", "\n").replace("\r", "\n")
+    t = "\n".join(l for l in t.split("\n") if not re.match(r"^\s*\*?\s*Periodo de consideraci", l, re.I))
+    if regla.get("despues_de"):
+        m = re.search(regla["despues_de"], t, re.I)
+        t = t[m.end():] if m else ""
+    if regla.get("antes_de"):
+        m = re.search(regla["antes_de"], t, re.I)
+        t = t[:m.start()] if m else t
+    for a, b in regla.get("reemplazos", {}).items():
+        t = re.sub(a, b, t)
+    t = re.sub(r"[ \t]*\t[ \t]*", " ", t)  # las tabulaciones del depto dejan huecos grandes en el cuadro
+    t = re.sub(r"[ \t]+\n", "\n", t)
+    t = re.sub(r"\n{3,}", "\n\n", t)
+    return t.strip()
+
+
+def poner_textos(wb_d, wb_mr, mapeo, mes, plan):
+    """Pasa los textos del depto a los cuadros de comentarios del informe."""
+    n = 0
+    vars_ = {"periodo": periodo(mes), "mes_en": MONTHS[int(mes[4:]) - 1], "mes_abr": ABR[int(mes[4:]) - 1]}
+    for r in mapeo.get("cuadros", []):
+        try:
+            ws = hoja_com(wb_mr, r["hoja_mr"])
+        except KeyError:
+            continue
+        caja = buscar_cuadro(ws, r)
+        if caja is None:
+            plan.avisos.append(f"no encontre el cuadro de texto {r.get('cuadro_nombre', '')} en {r['hoja_mr']}!{r.get('cuadro_en', '')}")
+            continue
+        modo = r.get("modo", "desde_celda")
+        if modo == "vaciar":  # el depto no manda ese texto: queda solo el rotulo para que Juan lo complete
+            nuevo = r.get("encabezado", "").format(**vars_)
+        elif modo == "solo_periodo":
+            viejo = texto_de(caja).replace("\r", "\n")
+            nuevo = PERIODO_RE.sub(vars_["periodo"], viejo, count=1)
+        else:
+            wsd = hoja_com(wb_d, r["hoja_depto"])
+            if modo == "desde_cuadro":
                 try:
-                    if s.Type in (13, 11) and xl.app.Intersect(s.TopLeftCell, area) is not None:
-                        fotos.append(s)
+                    fuente = texto_de(wsd.Shapes(r["cuadro_depto"]))
+                except Exception:
+                    fuente = ""
+            else:
+                celdas = r.get("celdas") or [r["celda"]]
+                fuente = "\n".join(str(wsd.Range(c).Value) for c in celdas if wsd.Range(c).Value not in (None, ""))
+            cuerpo = limpiar(fuente, r)
+            if r.get("plantilla"):
+                m = re.search(r["extraer"], cuerpo)
+                if not m:
+                    continue
+                nuevo = r["plantilla"].format(x=m.group(1).strip(), **vars_)
+            else:
+                if not cuerpo and not r.get("aunque_vacio"):
+                    continue
+                nuevo = r.get("encabezado", "").format(**vars_) + cuerpo
+        if nuevo.strip() and nuevo != texto_de(caja).replace("\r", "\n"):
+            # el texto nuevo toma el formato de la primera letra real del cuadro
+            # (si el cuadro arranca con una linea vacia en letra chica, no se usa esa)
+            viejo = texto_de(caja)
+            idx = next((k for k, ch in enumerate(viejo) if not ch.isspace()), 0)
+            fmt = None
+            try:
+                f0 = caja.TextFrame.Characters(idx + 1, 1).Font
+                fmt = (f0.Size, f0.Name, f0.Bold, f0.Color)
+            except Exception:
+                pass
+            caja.TextFrame2.TextRange.Text = nuevo.replace("\n", "\r")
+            if fmt:
+                try:
+                    f1 = caja.TextFrame.Characters().Font
+                    f1.Size, f1.Name, f1.Bold, f1.Color = fmt
                 except Exception:
                     pass
-            if not fotos:
-                continue
-            esc(fr["seccion"], negrita=True)
-            top = ws.Cells(fila[0], 1).Top
-            left = ws.Cells(fila[0], 1).Left
-            alto_max = 0
-            for s in sorted(fotos, key=lambda s: (s.Top, s.Left)):
-                s.Copy()
-                ws.Paste(ws.Cells(fila[0], 1))
-                nueva = ws.Shapes(ws.Shapes.Count)
-                if nueva.Width > 380:
-                    nueva.LockAspectRatio = True
-                    nueva.Width = 380
-                if left + nueva.Width > 1200:  # nueva fila de fotos
-                    top += alto_max + 10
-                    left, alto_max = ws.Cells(1, 1).Left, 0
-                nueva.Top, nueva.Left = top, left
-                left += nueva.Width + 10
-                alto_max = max(alto_max, nueva.Height)
-                total_fotos += 1
-            # bajar las filas hasta debajo de las fotos
-            while ws.Cells(fila[0], 1).Top < top + alto_max + 10:
-                fila[0] += 1
-        if total_fotos:
-            plan.avisos.append(f"{total_fotos} fotos del depto copiadas en la hoja '{nombre}'")
-    finally:
-        if wb_d is not None:
-            copia = wb_d.FullName
-            wb_d.Close(SaveChanges=False)
-            try:
-                os.remove(copia)
-            except OSError:
-                pass
+            n += 1
+            if r.get("traducir"):
+                plan.revisar.append((ws.Name, f"cuadro en {r.get('cuadro_en', r.get('cuadro_nombre'))}",
+                                     "Texto del depto en castellano: pasarlo a ingles."))
+    return n
 
-    fila[0] += 1
-    esc("CELDAS CARGADAS EN EL INFORME", negrita=True)
-    esc("Hoja", "Celda", "Valor", "De donde salio", negrita=True)
-    for h, c, v, org in hechas:
-        esc(h, c, v if not isinstance(v, float) else round(v, 6), org)
-    if saltadas:
-        esc("", "", f"{saltadas} celdas no se tocaron porque en el informe tienen formula")
-    return len(textos)
+
+def copiar_fotos(xl, wb_d, wb_mr, mapeo, plan):
+    """Borra las fotos del mes anterior en su lugar del informe y pone las del depto, acomodadas en ese espacio."""
+    total = 0
+    for r in mapeo.get("fotos", []):
+        try:
+            wsd = hoja_com(wb_d, r["hoja_depto"])
+            wsm = hoja_com(wb_mr, r["hoja_mr"])
+        except KeyError:
+            continue
+        area_d = wsd.Range(r["area_depto"])
+        zona = wsm.Range(r.get("zona_mr", r["area_mr"]))
+        fotos = []
+        for i in range(1, wsd.Shapes.Count + 1):
+            s = wsd.Shapes(i)
+            try:
+                es_foto = s.Type in (13, 11) or (s.Type == 6 and any(s.GroupItems(k).Type in (13, 11)
+                                                                     for k in range(1, s.GroupItems.Count + 1)))
+                if es_foto and xl.app.Intersect(s.TopLeftCell, area_d) is not None:
+                    fotos.append(s)
+            except Exception:
+                pass
+        # Las fotos nuevas van donde estaban las del mes anterior (Juan a veces mueve el diseno):
+        # se toma el rectangulo que ocupaban las fotos viejas dentro de la zona.
+        viejas = []
+        for i in range(1, wsm.Shapes.Count + 1):
+            s = wsm.Shapes(i)
+            try:
+                es_foto = s.Type in (13, 11) or (s.Type == 6 and any(s.GroupItems(k).Type in (13, 11)
+                                                                     for k in range(1, s.GroupItems.Count + 1)))
+                if es_foto and xl.app.Intersect(s.TopLeftCell, zona) is not None:
+                    viejas.append(s)
+            except Exception:
+                pass
+        if viejas:
+            x0 = min(s.Left for s in viejas); y0 = min(s.Top for s in viejas)
+            x1 = max(s.Left + s.Width for s in viejas); y1 = max(s.Top + s.Height for s in viejas)
+        else:
+            a = wsm.Range(r["area_mr"])
+            x0, y0, x1, y1 = a.Left, a.Top, a.Left + a.Width, a.Top + a.Height
+        # se borran las fotos viejas y sus marcas chicas (flechas, circulos, rotulos) alrededor;
+        # los cuadros de comentarios grandes no se tocan
+        m = 20
+        claves_viejas = {(v.Name, round(v.Left), round(v.Top)) for v in viejas}
+        for i in range(wsm.Shapes.Count, 0, -1):
+            s = wsm.Shapes(i)
+            try:
+                if s.Type in (3, 4):
+                    continue
+                dentro = (s.Left >= x0 - m and s.Top >= y0 - m and s.Left + s.Width <= x1 + m
+                          and s.Top + s.Height <= y1 + m)
+                chica = s.Width * s.Height < 0.35 * (x1 - x0) * (y1 - y0) and len(texto_de(s)) < 120
+                toda = r.get("limpiar_toda_la_zona") and xl.app.Intersect(s.TopLeftCell, zona) is not None
+                if (s.Name, round(s.Left), round(s.Top)) in claves_viejas or (dentro and chica) or toda:
+                    s.Delete()
+            except Exception:
+                pass
+        if not fotos:
+            continue
+        fotos.sort(key=lambda s: (round(s.Top / 20), s.Left))
+        n = len(fotos)
+        cols = n if n <= 3 else -(-n // 2)
+        filas = -(-n // cols)
+        gap = 4
+        cw = ((x1 - x0) - gap * (cols - 1)) / cols
+        ch = ((y1 - y0) - gap * (filas - 1)) / filas
+        wsm.Activate()
+        for i, s in enumerate(fotos):
+            antes = {wsm.Shapes(k).ID for k in range(1, wsm.Shapes.Count + 1)}
+            # el portapapeles de Windows a veces tarda: se reintenta el copiar/pegar
+            for intento in range(4):
+                try:
+                    s.Copy()
+                    time.sleep(0.3)
+                    wsm.Paste()
+                    break
+                except Exception:
+                    time.sleep(1.5)
+            # la foto pegada es la forma que no estaba antes (no siempre es la ultima de la lista)
+            nuevas = [wsm.Shapes(k) for k in range(1, wsm.Shapes.Count + 1) if wsm.Shapes(k).ID not in antes]
+            if not nuevas:
+                plan.avisos.append(f"no se pudo pegar una foto en {wsm.Name}")
+                continue
+            nueva = nuevas[0]
+            nueva.LockAspectRatio = True
+            esc = min(cw / nueva.Width, ch / nueva.Height)
+            nueva.Width = nueva.Width * esc
+            f, c = divmod(i, cols)
+            nueva.Left = x0 + c * (cw + gap) + (cw - nueva.Width) / 2
+            nueva.Top = y0 + f * (ch + gap) + (ch - nueva.Height) / 2
+            total += 1
+    return total
+
+
+def textos_y_fotos(xl, wb_mr, mapeo, archivo, mes, plan):
+    if not (mapeo.get("cuadros") or mapeo.get("fotos")):
+        return 0, 0
+    wb_d = xl.abrir(archivo, solo_lectura=True)
+    nt = nf = 0
+    try:
+        try:
+            nt = poner_textos(wb_d, wb_mr, mapeo, mes, plan)
+        except Exception as e:
+            plan.avisos.append(f"no pude pasar los textos: {e}")
+        try:
+            nf = copiar_fotos(xl, wb_d, wb_mr, mapeo, plan)
+        except Exception as e:
+            plan.avisos.append(f"no pude pasar las fotos: {e}")
+    finally:
+        copia = wb_d.FullName
+        wb_d.Close(SaveChanges=False)
+        try:
+            os.remove(copia)
+        except OSError:
+            pass
+    return nt, nf
+
+
+def escribir_revisar(salida, notas, mes):
+    """Lista de cosas para revisar, en un .txt al lado del informe (no se agregan hojas al Excel)."""
+    p = os.path.splitext(salida)[0] + " - revisar.txt"
+    lineas = [f"GEPPO {MESES[int(mes[4:]) - 1].upper()} {mes[:4]} - cosas para revisar en {os.path.basename(salida)}",
+              f"Actualizado: {dt.datetime.now():%d/%m/%Y %H:%M}", ""]
+    for depto, items in notas.items():
+        lineas.append(f"== {depto}")
+        lineas += [f"   - {x}" for x in items] or ["   (nada)"]
+        lineas.append("")
+    with open(p, "w", encoding="utf-8-sig") as f:
+        f.write("\n".join(lineas))
 
 
 # ------------------------------------------------------------- estado
@@ -636,7 +765,7 @@ def guardar_estado(e):
 def mapeos():
     out = []
     for p in sorted(glob.glob(os.path.join(AQUI, "mapeos", "*.json"))):
-        with open(p, encoding="utf-8") as f:
+        with open(p, encoding="utf-8-sig") as f:  # acepta archivos guardados con el Bloc de notas
             out.append(json.load(f))
     return out
 
@@ -684,6 +813,16 @@ def procesar(cfg, mes, forzar=False):
         if wb_mr.ReadOnly:
             log(f"{os.path.basename(salida)} lo tiene abierto alguien. Reintento en la proxima vuelta.")
             return False
+        # si el informe se guardo con varias hojas seleccionadas (agrupadas), Excel no deja
+        # agregar hojas: se deja seleccionada solo la primera hoja visible
+        for i in range(1, wb_mr.Worksheets.Count + 1):
+            if wb_mr.Worksheets(i).Visible == -1:
+                wb_mr.Worksheets(i).Select(True)
+                break
+        # hojas AUTO de versiones anteriores del programa: se sacan
+        for n in [n for n in hojas_com(wb_mr) if n.startswith("AUTO ")]:
+            wb_mr.Worksheets(n).Delete()
+        notas = em.setdefault("_revisar", {})
         if nuevo:
             for h, c, v in titulos_del_mes(wb_mr, mes):
                 log(f"titulo actualizado {h}!{c}: {v}")
@@ -696,13 +835,15 @@ def procesar(cfg, mes, forzar=False):
                     em[m["key"]] = firma
                     continue
                 hechas, saltadas = aplicar(wb_mr, m, plan, mes)
-                try:
-                    ntx = hoja_auto(xl, wb_mr, m, f, mes, hechas, saltadas, plan)
-                except Exception as e:
-                    ntx = 0
-                    log(f"[{m['nombre']}] no pude armar la hoja AUTO (los numeros si se cargaron): {e}")
-                log(f"[{m['nombre']}] cargue {len(hechas)} celdas, {len(plan.revisar)} para revisar, "
-                    f"{ntx} textos; desde {os.path.basename(f)}")
+                ntx = nfo = 0
+                if plan.bloques_cargados:
+                    try:
+                        ntx, nfo = textos_y_fotos(xl, wb_mr, m, f, mes, plan)
+                    except Exception as e:
+                        log(f"[{m['nombre']}] no pude pasar textos/fotos (los numeros si se cargaron): {e}")
+                log(f"[{m['nombre']}] cargue {len(hechas)} celdas, {ntx} textos, {nfo} fotos, "
+                    f"{len(plan.revisar)} para revisar; desde {os.path.basename(f)}")
+                notas[m["nombre"]] = [f"{h}!{c}: {motivo}" for h, c, motivo in plan.revisar] + plan.avisos
                 for a in plan.avisos:
                     log(f"[{m['nombre']}]   {a}")
                 em[m["key"]] = firma
@@ -712,6 +853,7 @@ def procesar(cfg, mes, forzar=False):
         if hubo or nuevo:
             wb_mr.Worksheets(1).Activate()
             wb_mr.Save()
+            escribir_revisar(salida, notas, mes)
     finally:
         xl.cerrar()
     guardar_estado(estado)
